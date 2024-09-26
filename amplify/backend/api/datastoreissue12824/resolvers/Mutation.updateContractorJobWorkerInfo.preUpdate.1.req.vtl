@@ -1,0 +1,16 @@
+## We don't allow audit fields to be set manually, we set them
+$util.qr($context.args.input.remove("lastEdited"))
+
+#if( $util.authType() == "User Pool Authorization" )
+  #set( $currentUserId = $util.defaultIfNull($ctx.identity.claims.get("username"), $util.defaultIfNull($ctx.identity.claims.get("cognito:username"), null)) )
+  #set( $now = $util.time.nowISO8601() )
+  #set( $currentVersion = $util.defaultIfNull($context.args.input["_version"], 0) )
+
+  #set( $lastEdited = {
+    "cognitoUserId": $currentUserId,
+    "at": $now,
+    "versionEdited": $currentVersion
+  } )
+
+  $util.qr( $context.args.input.put("lastEdited", $lastEdited) )
+#end

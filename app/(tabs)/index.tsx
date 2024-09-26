@@ -1,70 +1,115 @@
-import { Image, StyleSheet, Platform } from 'react-native';
+import React from "react";
+import { DataStore, Predicates } from "aws-amplify/datastore";
+import { withAuthenticator } from "@aws-amplify/ui-react-native";
+import { ContractorJobInfo } from "@/src/models";
+import dayjs from "dayjs";
+import { ThemedText } from "@/components/ThemedText";
+import { Button, StyleSheet } from "react-native";
+import ParallaxScrollView from "@/components/ParallaxScrollView";
+import Ionicons from "@expo/vector-icons/Ionicons";
+import { ThemedView } from "@/components/ThemedView";
 
-import { HelloWave } from '@/components/HelloWave';
-import ParallaxScrollView from '@/components/ParallaxScrollView';
-import { ThemedText } from '@/components/ThemedText';
-import { ThemedView } from '@/components/ThemedView';
+const sleep = (ms: number) => {
+  return new Promise((resolve) => {
+    console.log("Sleeping for", ms);
+    return setTimeout(resolve, ms);
+  });
+};
 
-export default function HomeScreen() {
+const App = () => {
+  const testDataStore = async () => {
+    try {
+      let jobInfo = (
+        await DataStore.query(ContractorJobInfo, (info) =>
+          info.jobId.eq("dummy-id")
+        )
+      )[0];
+
+      console.log("existing jobInfo", jobInfo);
+
+      if (jobInfo == null) {
+        console.log(`Creating ContractorJobInfo`);
+
+        jobInfo = await DataStore.save(
+          new ContractorJobInfo({
+            contractorId: "currentContractor.id",
+            cognitoUserId: "currentContractor.cognitoUserId",
+            jobId: "dummy-id",
+          })
+        );
+      } else {
+        console.log(`Updating ContractorJobInfo initially`);
+
+        jobInfo = await DataStore.save(
+          ContractorJobInfo.copyOf(jobInfo, (updated) => {
+            updated.contractorId = `changed-${dayjs().toISOString()}`;
+          })
+        );
+      }
+
+      // Some of the test scenarios sleep between DataStore operations, others don't
+      // This is to see how adding a delay (for outbox syncing) affects things
+
+      await sleep(5000);
+
+      console.log(`Updating ContractorJobInfo`);
+
+      await DataStore.save(
+        ContractorJobInfo.copyOf(jobInfo, (updated) => {
+          updated.contractorId = "overwritten";
+        })
+      );
+
+      // query for the job info again
+      jobInfo = (
+        await DataStore.query(ContractorJobInfo, (info) =>
+          info.jobId.eq("dummy-id")
+        )
+      )[0];
+
+      console.log("updated jobInfo", jobInfo);
+    } catch (error) {
+      console.error("Error during DataStore operations:", error);
+    }
+  };
+
+  // delete all job info
+  const deleteAllJobInfo = async () => {
+    try {
+      await DataStore.delete(ContractorJobInfo, Predicates.ALL);
+      console.log("Deleted all job info");
+    } catch (error) {
+      console.error("Error deleting all job info:", error);
+    }
+  };
+
   return (
     <ParallaxScrollView
-      headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
+      headerBackgroundColor={{ light: "#D0D0D0", dark: "#353636" }}
       headerImage={
-        <Image
-          source={require('@/assets/images/partial-react-logo.png')}
-          style={styles.reactLogo}
-        />
-      }>
+        <Ionicons size={310} name="code-slash" style={styles.headerImage} />
+      }
+    >
       <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome!</ThemedText>
-        <HelloWave />
+        <ThemedText type="title">DataStore Issue #12824</ThemedText>
       </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
-        <ThemedText>
-          Edit <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> to see changes.
-          Press{' '}
-          <ThemedText type="defaultSemiBold">
-            {Platform.select({ ios: 'cmd + d', android: 'cmd + m' })}
-          </ThemedText>{' '}
-          to open developer tools.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-        <ThemedText>
-          Tap the Explore tab to learn more about what's included in this starter app.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-        <ThemedText>
-          When you're ready, run{' '}
-          <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText> to get a fresh{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> directory. This will move the current{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
-          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-        </ThemedText>
-      </ThemedView>
+      <Button onPress={testDataStore} title="Test DataStore" />
+      <Button onPress={deleteAllJobInfo} title="Delete All Job Info" />
     </ParallaxScrollView>
   );
-}
+};
+
+export default withAuthenticator(App);
 
 const styles = StyleSheet.create({
+  headerImage: {
+    color: "#808080",
+    bottom: -90,
+    left: -35,
+    position: "absolute",
+  },
   titleContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
     gap: 8,
-  },
-  stepContainer: {
-    gap: 8,
-    marginBottom: 8,
-  },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
-    position: 'absolute',
   },
 });
