@@ -19,5 +19,23 @@
         "datastoreissue12824": {}
       }
     }
+  },
+  "dan": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-datastoreissue12824-dan-7eaad-authRole",
+      "UnauthRoleArn": "arn:aws:iam::471112538361:role/amplify-datastoreissue12824-dan-7eaad-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::471112538361:role/amplify-datastoreissue12824-dan-7eaad-authRole",
+      "Region": "us-west-2",
+      "DeploymentBucketName": "amplify-datastoreissue12824-dan-7eaad-deployment",
+      "UnauthRoleName": "amplify-datastoreissue12824-dan-7eaad-unauthRole",
+      "StackName": "amplify-datastoreissue12824-dan-7eaad",
+      "StackId": "arn:aws:cloudformation:us-west-2:471112538361:stack/amplify-datastoreissue12824-dan-7eaad/b2d27a00-7c79-11ef-8e93-069a96480e17",
+      "AmplifyAppId": "d3bbjapwba9nk1"
+    },
+    "categories": {
+      "auth": {
+        "datastoreissue12824b7d1cb79": {}
+      }
+    }
   }
 }
