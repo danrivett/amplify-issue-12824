@@ -1,0 +1,34 @@
+{
+  "cli": {
+    "version": ">= 2.7.1"
+  },
+  "build": {
+    "base": {
+      "ios": {
+        "resourceClass": "m-medium"
+      }
+    },
+    "uat:base": {
+      "extends": "base",
+      "channel": "default",
+      "env": {
+        "AWS_EXPORTS_KEY": "AWS_EXPORTS_UAT",
+        "APP_CONFIG_URL": "https://vfh2zirgbq73rtju6wlrbgamny0odunh.lambda-url.us-west-2.on.aws/"
+      }
+    },
+    "uat:simulator": {
+      "extends": "uat:base",
+      "distribution": "internal",
+      "ios": {
+        "simulator": true
+      }
+    },
+    "uat:simulator:dev": {
+      "extends": "uat:simulator",
+      "developmentClient": true
+    }
+  },
+  "submit": {
+    "production": {}
+  }
+}

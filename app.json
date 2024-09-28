@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "amplify-issue-12824-2",
-    "slug": "amplify-issue-12824-2",
+    "name": "amplify-issue-12824",
+    "slug": "amplify-issue-12824",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -15,7 +15,8 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.dan.rivett.amplifyissue12824"
     },
     "android": {
       "adaptiveIcon": {
@@ -25,6 +26,11 @@
     },
     "web": {
       "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "bbbedec0-ce60-4e8d-a5f3-7d518e11da34"
+      }
     }
   }
 }
