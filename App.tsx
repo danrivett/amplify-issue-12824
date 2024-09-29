@@ -8,6 +8,7 @@ import { Button, StyleSheet, View } from 'react-native';
 import { ThemedView } from '@/components/ThemedView';
 
 import { Amplify } from 'aws-amplify';
+import * as Auth from 'aws-amplify/auth';
 import { ConsoleLogger } from 'aws-amplify/utils';
 
 import awsconfig from './aws-exports.js';
@@ -82,6 +83,8 @@ const App = () => {
     }
   };
 
+  const signOut = () => Auth.signOut();
+
   return (
     <View style={styles.container}>
       <ThemedView style={styles.titleContainer}>
@@ -89,6 +92,7 @@ const App = () => {
       </ThemedView>
       <Button onPress={testDataStore} title="Test DataStore" />
       <Button onPress={deleteAllJobInfo} title="Delete All Job Info" />
+      <Button onPress={signOut} title="Sign Out" />
     </View>
   );
 };
